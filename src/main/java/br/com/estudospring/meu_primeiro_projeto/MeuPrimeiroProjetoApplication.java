@@ -16,8 +16,8 @@ public class MeuPrimeiroProjetoApplication {
 	}
 
 	@GetMapping("/hello")	
-	public String helloWord(){
-		return "Hello World!";
+	public String helloWord(@RequestParam(value = "name", defaultValue = "World") String name){
+		return String.format("Hello, %s !",name);
 	}
 
 }
