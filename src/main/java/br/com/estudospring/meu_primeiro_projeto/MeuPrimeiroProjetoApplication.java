@@ -6,9 +6,12 @@ import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 
 @RestController
@@ -24,8 +27,6 @@ public class MeuPrimeiroProjetoApplication {
 		return String.format("Hello, %s !",name);
 	}
 
-	
-
 	@GetMapping("/greet")	
 	public Map<String, String> greet(@RequestParam(value =  "name", defaultValue = "Guest") String name) {
 		Map<String, String> response = new HashMap<>();
@@ -33,4 +34,22 @@ public class MeuPrimeiroProjetoApplication {
 		response.put("timestamp", new Date().toString());
 		return response;
 	} 
+
+	@GetMapping("/divide")
+	//Indica que os parâmetros são obrigatórios
+	public double divide(@RequestParam int a, @RequestParam int b){
+		if( b == 0){
+			throw new IllegalArgumentException("Cannot divide by zero");
+		}
+		return (double) a / b;
+	}
+
+	//Essa anotação indica que este método deve ser chamado se ouver uma IllegalArgumentException
+	@ExceptionHandler(IllegalArgumentException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)//Define o status da resposta Http
+	public Map<String, String > handleIllegalArgumentException(IllegalArgumentException ex){
+		Map<String,String> error = new HashMap<>();
+		error.put("error",ex.getMessage());
+		return error;
+	}
 }
